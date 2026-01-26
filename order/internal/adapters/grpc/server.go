@@ -20,19 +20,19 @@ func (a Adapter) Create(ctx context.Context, request *order.CreateOrderRequest) 
 	for _, orderItem := range request.OrderItems {
 		orderItems = append(orderItems, domain.OrderItem{
 			ProductCode: orderItem.ProductCode,
-			UnitPrice:   orderItem.UnitPrice,
+			UnitPrice:   float32(orderItem.UnitPrice),
 			Quantity:    orderItem.Quantity,
 		})
 	}
 
-	newOrder := domain.NewOrder(int64(request.CustomerId), orderItems)
+	newOrder := domain.NewOrder(int64(request.CostumerId), orderItems)
 
 	result, err := a.api.PlaceOrder(newOrder)
 	if err != nil {
 		return nil, err
 	}
 
-	return &order.CreateOrderResponse{OrderId: int32(result.ID)}, nil
+	return &order.CreateOrderResponse{OrderId: int64(result.ID)}, nil
 }
 
 type Adapter struct {
@@ -55,7 +55,7 @@ func (a Adapter) Run() {
 
 	order.RegisterOrderServer(grpcServer, a)
 
-	if config.GetEnv("ENV") == "development" {
+	if config.GetEnv() == "development" {
 		reflection.Register(grpcServer)
 	}
 
