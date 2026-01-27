@@ -9,6 +9,7 @@ replace github.com/buenorafa/microservices-proto/golang/payment => ../../microse
 require (
 	github.com/buenorafa/microservices-proto/golang/order v0.0.0-00010101000000-000000000000
 	github.com/buenorafa/microservices-proto/golang/payment v0.0.0-00010101000000-000000000000
+	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	google.golang.org/grpc v1.78.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.1

@@ -7,7 +7,9 @@ import (
 
 	"github.com/buenorafa/microservices-proto/golang/payment"
 	"github.com/buenorafa/microservices/order/internal/application/core/domain"
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -17,6 +19,17 @@ type Adapter struct {
 
 func NewAdapter(paymentServiceUrl string) (*Adapter, error) {
 	var opts []grpc.DialOption
+	opts = append(opts, 
+	grpc.WithUnaryInterceptor( 
+		grpc_retry.UnaryClientInterceptor(
+			grpc_retry.WithCodes(codes.Unavailable, codes.ResourceExhausted),
+			grpc_retry.WithMax(5),
+			grpc_retry.WithBackoff(grpc_retry.BackoffLinear(1*time.Second)),
+		),
+	),
+	)
+
+	
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.Dial(paymentServiceUrl, opts...)
