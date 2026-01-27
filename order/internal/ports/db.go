@@ -5,4 +5,5 @@ import "github.com/buenorafa/microservices/order/internal/application/core/domai
 type DBPort interface {
 	Get(id string) (domain.Order, error)
 	Save(*domain.Order) error
+	UpdateStatus(order *domain.Order) error
 }
