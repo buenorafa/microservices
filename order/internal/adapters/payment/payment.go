@@ -3,6 +3,7 @@ package payment_adapter
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/buenorafa/microservices-proto/golang/payment"
 	"github.com/buenorafa/microservices/order/internal/application/core/domain"
@@ -28,7 +29,11 @@ func NewAdapter(paymentServiceUrl string) (*Adapter, error) {
 }
 
 func (a Adapter) Charge(order *domain.Order) error {
-	_, err := a.payment.Create(context.Background(), &payment.CreatePaymentRequest{
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	
+	_, err := a.payment.Create(ctx, &payment.CreatePaymentRequest{
 		UserId:     order.CustomerID,
 		OrderId:    order.ID,
 		TotalPrice: order.TotalPrice(),
