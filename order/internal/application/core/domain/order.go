@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/buenorafa/microservices-proto/golang/shipping"
+)
 
 type OrderItem struct {
 	ProductCode string  `json:"product_code"`
@@ -39,4 +43,14 @@ func (o Order) TotalItems() int {
 		total += int(item.Quantity)
 	}
 	return total
+}
+
+func (o Order) ToShippingItems() []*shipping.ShippingItem{
+	items := make([]*shipping.ShippingItem, 0, len(o.OrderItems))
+	for _, it := range o.OrderItems {
+		items = append(items, &shipping.ShippingItem{
+			Quantity: it.Quantity,
+		})
+	}
+	return items
 }
